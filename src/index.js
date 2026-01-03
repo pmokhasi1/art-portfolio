@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createRoot } from 'react-dom/client';
 import { initializeApp } from 'firebase/app';
 import { 
   getAuth, 
@@ -458,5 +459,12 @@ const NavItem = ({ label, href }) => (
 const DEFAULT_ART = [
   { id: 'd1', category: 'Stippling', url: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5', title: 'Cellular Resonance', desc: 'Hand-applied points on black archival paper.', dimensions: '18" x 24"', year: '2023', createdAt: '2023-01-01T00:00:00Z' }
 ];
+
+// 🚀 STARTUP LOGIC: Renders the app into the HTML "root" div
+const container = document.getElementById('root');
+if (container) {
+  const root = createRoot(container);
+  root.render(<App />);
+}
 
 export default App;
