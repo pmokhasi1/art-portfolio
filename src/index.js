@@ -190,6 +190,7 @@ const App = () => {
     try {
       if (editingId) {
         const artDoc = doc(db, 'artifacts', appId, 'public', 'data', 'artwork', editingId);
+        // Includes the 'desc' field in the update payload
         await updateDoc(artDoc, { ...newArt, updatedAt: new Date().toISOString() });
       } else {
         const artCollection = collection(db, 'artifacts', appId, 'public', 'data', 'artwork');
@@ -215,7 +216,15 @@ const App = () => {
   };
 
   const startEdit = (piece) => {
-    setNewArt({ ...piece });
+    // Explicitly mapping fields to ensure 'desc' is handled even if missing in old docs
+    setNewArt({
+      title: piece.title || '',
+      category: piece.category || 'Stippling',
+      url: piece.url || '',
+      desc: piece.desc || '',
+      dimensions: piece.dimensions || '',
+      year: piece.year || new Date().getFullYear().toString()
+    });
     setEditingId(piece.id);
     setPortalTab('add');
   };
@@ -398,6 +407,12 @@ const App = () => {
                       <label className="text-[10px] uppercase tracking-widest text-stone-500 font-bold ml-1">Work Title</label>
                       <input required type="text" className="w-full bg-black border border-stone-800 p-3 rounded-lg outline-none focus:border-white transition-all text-white" value={newArt.title} onChange={e => setNewArt({...newArt, title: e.target.value})} />
                     </div>
+
+                    <div className="space-y-2 text-left">
+                      <label className="text-[10px] uppercase tracking-widest text-stone-500 font-bold ml-1">Description / Artist Note</label>
+                      <textarea className="w-full bg-black border border-stone-800 p-3 rounded-lg outline-none focus:border-white transition-all text-white h-24 resize-none" placeholder="Context or meaning behind this piece..." value={newArt.desc} onChange={e => setNewArt({...newArt, desc: e.target.value})} />
+                    </div>
+
                     <div className="space-y-2 text-left">
                       <label className="text-[10px] uppercase tracking-widest text-stone-500 font-bold ml-1">Artwork Image</label>
                       <div onDragOver={handleDragOver} onDragEnter={handleDragEnter} onDragLeave={handleDragLeave} onDrop={handleDrop} onClick={() => fileInputRef.current?.click()} className={`w-full border-2 border-dashed rounded-xl p-10 flex flex-col items-center justify-center cursor-pointer transition-all relative overflow-hidden group/drop ${isDragging ? 'border-white bg-white/10' : 'border-stone-800 hover:border-stone-500 hover:bg-white/5'}`}>
